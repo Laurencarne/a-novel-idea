@@ -9,6 +9,7 @@ class Footer extends Component {
             className="footerLinks"
             href="https://www.linkedin.com/in/lauren-carne-306a2a13/"
             target="_blank"
+            rel="noopener noreferrer"
           >
             Lauren Carne
           </a>
@@ -17,6 +18,7 @@ class Footer extends Component {
             className="footerLinks"
             href="https://www.linkedin.com/in/miao-shan-a60b2621/"
             target="_blank"
+            rel="noopener noreferrer"
           >
             Miao Shan
           </a>

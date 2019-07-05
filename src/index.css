@@ -85,3 +85,7 @@ nav {
   color: white;
   margin: 0px 5px;
 }
+.bookTitleLink {
+  color: rgb(73, 79, 82);
+  text-decoration: none;
+}

@@ -22,8 +22,11 @@ class Orders extends Component {
       <div>
         {this.state.orders.map(order => (
           <>
-            <p>User: {order.user_id}</p>
+            <p>
+              User: {order.user.first_name} {order.user.last_name}
+            </p>
             <p>Order Number: {order.id}</p>
+            <p> This order has {order.books.length} item(s).</p>
             <p>Total: £{order.total}</p>
             <hr />
           </>

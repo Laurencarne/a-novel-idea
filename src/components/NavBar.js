@@ -8,7 +8,10 @@ function NavBar() {
 
   return (
     <nav className="NavBar">
-      <h3>Logo</h3>
+      <Link style={navStyle} to="/">
+        <h3>Home</h3>
+      </Link>
+
       <ul className="nav-links">
         <Link style={navStyle} to="/books">
           <li>Books</li>
