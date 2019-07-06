@@ -4,6 +4,7 @@ import NavBar from "../components/NavBar";
 import Footer from "../components/Footer";
 import Home from "../components/Home";
 import Orders from "../components/Orders";
+import Cart from "../components/Cart";
 import Wishlists from "../components/Wishlists";
 import Books from "../components/Books";
 import Fiction from "../components/Fiction";
@@ -17,27 +18,46 @@ class App extends Component {
   };
 
   componentDidMount() {
-    this.fetchBooksFromSever();
-    this.fetchFilteredBooksFromServer("fiction");
+    this.fetchBooksFromSever().then(this.addVerifiedBooksToState());
+    localStorage.setItem("CartIDs", [localStorage.getItem("CartIDs") + ""]);
+    localStorage.setItem("WishIDs", [localStorage.getItem("WishIDs") + ""]);
   }
 
   fetchBooksFromSever = () => {
-    fetch(
-      BASEURL +
-        '?q=""&printType=books&orderBy=newest&maxResults=40&langRestrict=en'
-    )
-      .then(resp => resp.json())
-      .then(data => this.setState({ books: data.items }));
-  };
-
-  fetchFilteredBooksFromServer = genre => {
     return fetch(
       BASEURL +
-        `?q=%22%22+subject:${genre}&printType=books&orderBy=newest&maxResults=40&langRestrict=en`
-    )
-      .then(resp => resp.json())
-      .then(data => this.setState({ [genre]: data.items }));
+        '?q=""&printType=books&orderBy=newest&maxResults=40&langRestrict=en'
+    ).then(resp => resp.json());
   };
+
+  addVerifiedBooksToState = () => {
+    return data =>
+      data.items.map(book => {
+        if (
+          book.saleInfo.listPrice &&
+          book.volumeInfo.title &&
+          book.volumeInfo.authors &&
+          book.volumeInfo.publisher &&
+          book.volumeInfo.publishedDate &&
+          book.volumeInfo.description &&
+          book.volumeInfo.imageLinks &&
+          book.searchInfo.textSnippet
+        ) {
+          this.setState({
+            books: [...this.state.books, book]
+          });
+        }
+      });
+  };
+
+  // fetchFilteredBooksFromServer = genre => {
+  //   return fetch(
+  //     BASEURL +
+  //       `?q=%22%22+subject:${genre}&printType=books&orderBy=newest&maxResults=40&langRestrict=en`
+  //   )
+  //     .then(resp => resp.json())
+  //     .then(data => this.setState({ [genre]: data.items }));
+  // };
 
   render() {
     return (
@@ -58,6 +78,7 @@ class App extends Component {
             />
             <Route path="/books/:id" exact component={BookInformation} />
             <Route path="/orders" exact component={Orders} />
+            <Route path="/cart" exact component={Cart} />
             <Route path="/wishlists" exact component={Wishlists} />
           </Switch>
           <Footer />

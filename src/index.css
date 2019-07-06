@@ -16,6 +16,7 @@ code {
   text-align: center;
 }
 
+/* -------------NAVBAR------------- */
 nav {
   display: flex;
   justify-content: space-around;
@@ -32,13 +33,18 @@ nav {
   align-items: center;
   list-style: none;
 }
+/* -------------NAVBAR------------- */
+
+/* -------------CONTAINER FOR ALL BOOKS------------- */
 .Card {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   margin: 0;
 }
+/* -------------CONTAINER FOR ALL BOOKS------------- */
 
+/* -------------EACH INDIVIDUAL BOOK------------- */
 .innerCard {
   height: 310px;
   width: 220px;
@@ -58,10 +64,37 @@ nav {
   height: 220px;
   width: auto;
   box-shadow: 0px 5px 5px 5px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s;
+}
+.book-img:hover {
+  /* opacity: 0.3; */
+  transform: scale(1.5);
 }
 
+.bookTitleLink {
+  color: rgb(73, 79, 82);
+  margin: 8px 0px 0px 0px;
+}
+
+.bookPriceLink,
+.bookAuthorLink {
+  color: rgb(73, 79, 82);
+  margin: 4px 0px 0px 0px;
+}
+
+button {
+  color: black;
+  background-color: white;
+  border: 1px solid black;
+  border-radius: 2px;
+  margin: 4px;
+  padding: 5px;
+}
+/* -------------EACH INDIVIDUAL BOOK------------- */
+
+/* -------------FOOTER------------- */
 .Footer {
-  position: fixed;
+  /* position: fixed; */
   min-height: 5vh;
   left: 0;
   bottom: 0;
@@ -85,7 +118,4 @@ nav {
   color: white;
   margin: 0px 5px;
 }
-.bookTitleLink {
-  color: rgb(73, 79, 82);
-  text-decoration: none;
-}
+/* -------------FOOTER------------- */
