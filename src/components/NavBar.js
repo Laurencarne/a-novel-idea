@@ -22,6 +22,10 @@ function NavBar() {
         <Link style={navStyle} to="/wishlists">
           <li>Wish List</li>
         </Link>
+        <div>
+          <h1>Home page!</h1>
+          <Link style={navStyle} to='/signin'>Signin</Link> | <Link to='/inventory'>Inventory</Link>
+        </div>
       </ul>
     </nav>
   );
