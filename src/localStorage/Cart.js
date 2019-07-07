@@ -1,13 +1,25 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 
+const save = (key, value) => localStorage.setItem(key, JSON.stringify(value));
+
+const load = key => JSON.parse(localStorage.getItem(key));
+
+load("basket");
+
 class Cart extends Component {
   state = {
+    basket: load("basket"),
     clicked: false
   };
 
+  removeItem = id => {
+    const basket = load("basket").filter(item => item.id !== id);
+    save("basket", basket);
+  };
+
   renderBooks = () => {
-    return this.props.cart.map(book => (
+    return this.state.basket.map(book => (
       <div className="innerCard">
         <Link style={{ textDecoration: "none" }} to={`/books/${book.id}`}>
           <img className="book-img" src={book.image} alt={book.title} />
@@ -20,20 +32,12 @@ class Cart extends Component {
     ));
   };
 
-  handleClick = book => {
-    this.setState({
-      clicked: !this.state.clicked
-    });
-    console.log(book);
+  handleClick = id => {
+    this.removeItem(id);
   };
 
   render() {
-    return (
-      <>
-        <h1>{this.props.user.first_name}'s Cart</h1>
-        <div className="Card">{this.renderBooks()}</div>
-      </>
-    );
+    return <div className="Card">{this.renderBooks()}</div>;
   }
 }
 

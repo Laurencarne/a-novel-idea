@@ -1,36 +1,28 @@
 import React, { Component } from "react";
-
-const SERVERURL = `http://localhost:3000/orders`;
+import { Link } from "react-router-dom";
 
 class Orders extends Component {
   state = {
-    orders: []
+    clicked: false
   };
 
-  componentDidMount() {
-    fetch(SERVERURL)
-      .then(resp => resp.json())
-      .then(data =>
-        this.setState({
-          orders: data
-        })
-      );
-  }
+  renderOrders = () => {
+    return this.props.orders.map(order => (
+      <div>
+        <Link style={{ textDecoration: "none" }} to={`/orders/${order.id}`}>
+          <h3 className="bookTitleLink"> Order Number: {order.id} </h3>
+          <h5 className="bookAuthorLink"> {order.books.length} Books</h5>
+          <hr />
+        </Link>
+      </div>
+    ));
+  };
 
   render() {
     return (
       <div>
-        {this.state.orders.map(order => (
-          <>
-            <p>
-              User: {order.user.first_name} {order.user.last_name}
-            </p>
-            <p>Order Number: {order.id}</p>
-            <p> This order has {order.books.length} item(s).</p>
-            <p>Total: £{order.total}</p>
-            <hr />
-          </>
-        ))}
+        <h1>{this.props.user.first_name}'s Orders</h1>
+        <div>{this.renderOrders()}</div>
       </div>
     );
   }

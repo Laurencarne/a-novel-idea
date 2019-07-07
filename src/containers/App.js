@@ -3,7 +3,9 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import NavBar from "../components/NavBar";
 import Footer from "../components/Footer";
 import Home from "../components/Home";
+import Login from "../components/Login";
 import Orders from "../components/Orders";
+import OrderInformation from "../components/OrderInformation";
 import Cart from "../components/Cart";
 import Wishlists from "../components/Wishlists";
 import Books from "../components/Books";
@@ -14,14 +16,32 @@ const BASEURL = "https://www.googleapis.com/books/v1/volumes";
 
 class App extends Component {
   state = {
-    books: []
+    books: [],
+    // userId: 1,
+    currentUser: {},
+    currentUsersOrders: [],
+    currentUsersWishlist: [],
+    currentUsersCart: []
   };
 
   componentDidMount() {
     this.fetchBooksFromSever().then(this.addVerifiedBooksToState());
-    localStorage.setItem("CartIDs", [localStorage.getItem("CartIDs") + ""]);
-    localStorage.setItem("WishIDs", [localStorage.getItem("WishIDs") + ""]);
+    this.fetchUsersFromServer().then(this.addUserToState());
+    // if (localStorage.getItem("User")) {
+    //   this.setAndFetchUser(JSON.parse(localStorage.getItem("User")));
+    // }
   }
+
+  fetchUsersFromServer = () =>
+    fetch(`http://localhost:3000/users/1`).then(resp => resp.json());
+
+  addUserToState = () => data =>
+    this.setState({
+      currentUser: data,
+      currentUsersOrders: data.orders,
+      currentUsersWishlist: data.wishlist.books,
+      currentUsersCart: data.cart.books
+    });
 
   fetchBooksFromSever = () => {
     return fetch(
@@ -50,6 +70,27 @@ class App extends Component {
       });
   };
 
+  // setAndFetchUser = currentUser => {
+  //   this.setState({
+  //     userId: currentUser
+  //   });
+  //   fetch(`http://localhost:3000/users/${currentUser}`).then(resp =>
+  //     resp.json().then(data =>
+  //       this.setState({
+  //         currentUser: data
+  //       })
+  //     )
+  //   );
+  // };
+
+  // setUser = currentUser => {
+  //   localStorage.setItem("User", JSON.stringify(currentUser));
+  //   this.setState({
+  //     userId: currentUser
+  //   });
+  //   this.setAndFetchUser(currentUser);
+  // };
+
   // fetchFilteredBooksFromServer = genre => {
   //   return fetch(
   //     BASEURL +
@@ -67,6 +108,13 @@ class App extends Component {
           <Switch>
             <Route path="/" exact component={Home} />
             <Route
+              path="/login"
+              exact
+              render={() => (
+                <Login fetchUsers={this.fetchUsers} setUser={this.setUser} />
+              )}
+            />
+            <Route
               path="/books"
               exact
               render={() => <Books books={this.state.books} />}
@@ -77,9 +125,37 @@ class App extends Component {
               render={() => <Fiction books={this.state.fiction} />}
             />
             <Route path="/books/:id" exact component={BookInformation} />
-            <Route path="/orders" exact component={Orders} />
-            <Route path="/cart" exact component={Cart} />
-            <Route path="/wishlists" exact component={Wishlists} />
+            <Route
+              path="/orders"
+              exact
+              render={() => (
+                <Orders
+                  user={this.state.currentUser}
+                  orders={this.state.currentUsersOrders}
+                />
+              )}
+            />
+            <Route path="/orders/:id" exact component={OrderInformation} />
+            <Route
+              path="/cart"
+              exact
+              render={() => (
+                <Cart
+                  user={this.state.currentUser}
+                  cart={this.state.currentUsersCart}
+                />
+              )}
+            />
+            <Route
+              path="/wishlists"
+              exact
+              render={() => (
+                <Wishlists
+                  user={this.state.currentUser}
+                  wishlist={this.state.currentUsersWishlist}
+                />
+              )}
+            />
           </Switch>
           <Footer />
         </div>

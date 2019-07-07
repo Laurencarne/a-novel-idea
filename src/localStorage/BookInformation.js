@@ -3,6 +3,9 @@ import { Link } from "react-router-dom";
 
 const BASEURL = "https://www.googleapis.com/books/v1/volumes";
 
+let basket = [];
+const save = (key, value) => localStorage.setItem(key, JSON.stringify(value));
+
 class BookInformation extends Component {
   state = {
     clicked: false,
@@ -11,6 +14,14 @@ class BookInformation extends Component {
     genre: [],
     price: {},
     id: ""
+  };
+
+  handleCartClick = () => {
+    this.setState({
+      clicked: true
+    });
+    basket = [...basket, this.setBookDetails()];
+    save("basket", basket);
   };
 
   componentDidMount() {
@@ -27,23 +38,23 @@ class BookInformation extends Component {
       );
   }
 
-  // renderCartButton = () => {
-  //   if (!localStorage.getItem("basket").includes(this.state.id)) {
-  //     return (
-  //       <>
-  //         <button onClick={this.handleCartClick}> Add to Cart </button>
-  //       </>
-  //     );
-  //   } else {
-  //     return (
-  //       <>
-  //         <Link to="/cart" style={{ textDecoration: "none" }}>
-  //           <button> View Cart </button>
-  //         </Link>
-  //       </>
-  //     );
-  //   }
-  // };
+  renderCartButton = () => {
+    if (!localStorage.getItem("basket").includes(this.state.id)) {
+      return (
+        <>
+          <button onClick={this.handleCartClick}> Add to Cart </button>
+        </>
+      );
+    } else {
+      return (
+        <>
+          <Link to="/cart" style={{ textDecoration: "none" }}>
+            <button> View Cart </button>
+          </Link>
+        </>
+      );
+    }
+  };
 
   // renderWishButton = () => {
   //   if (!localStorage.getItem("basket").includes(this.state.id)) {
@@ -63,43 +74,12 @@ class BookInformation extends Component {
   //   }
   // };
 
-  handleCartClick = e => {
-    this.setState({
-      clicked: true
-    });
-    console.log("Clicked");
-
-    e.preventDefault();
-
-    this.addBookToServer(this.setBookDetails());
-  };
-
-  addBookToServer = book => {
-    return fetch(`http://localhost:3000/books`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(book)
-    });
-  };
-
-  // addBookToCartOnServer = book => {
-  //   return fetch(`http://localhost:3000/books`, {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json"
-  //     },
-  //     body: JSON.stringify(book)
-  //   });
-  // };
-
   // handleWishClick = e => {
   //   console.log("Clicked");
   //   e.preventDefault();
   //   this.addBookToServerWishlist(this.setBookDetails());
   // };
-  //
+
   // addBookToServerWishlist = book => {
   //   return fetch(`http://localhost:3000/wishlists`, {
   //     method: "POST",
@@ -151,7 +131,7 @@ class BookInformation extends Component {
           className="bookDescription"
           dangerouslySetInnerHTML={{ __html: this.state.book.description }}
         />
-        <button onClick={this.handleCartClick}> Add to Cart </button>
+        {this.renderCartButton()}
       </div>
     );
   }

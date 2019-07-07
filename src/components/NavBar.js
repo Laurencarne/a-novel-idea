@@ -22,6 +22,12 @@ function NavBar() {
         <Link style={navStyle} to="/wishlists">
           <li>Wish List</li>
         </Link>
+        <Link style={navStyle} to="/cart">
+          <li>Cart</li>
+        </Link>
+        <Link style={navStyle} to="/login">
+          <li>Login</li>
+        </Link>
       </ul>
     </nav>
   );
