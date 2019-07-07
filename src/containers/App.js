@@ -15,14 +15,18 @@ import BookInformation from "../components/BookInformation";
 const BASEURL = "https://www.googleapis.com/books/v1/volumes";
 
 class App extends Component {
-  state = {
-    books: [],
-    // userId: 1,
-    currentUser: {},
-    currentUsersOrders: [],
-    currentUsersWishlist: [],
-    currentUsersCart: []
-  };
+  constructor() {
+    super();
+    this.state = {
+      books: [],
+      // userId: 1,
+      currentUser: {},
+      currentUsersOrders: [],
+      currentUsersWishlist: [],
+      currentUsersCart: [],
+      sortBy: "All"
+    };
+  }
 
   componentDidMount() {
     this.fetchBooksFromSever().then(this.addVerifiedBooksToState());
@@ -61,6 +65,7 @@ class App extends Component {
           book.volumeInfo.publishedDate &&
           book.volumeInfo.description &&
           book.volumeInfo.imageLinks &&
+          book.searchInfo &&
           book.searchInfo.textSnippet
         ) {
           this.setState({
@@ -68,6 +73,48 @@ class App extends Component {
           });
         }
       });
+  };
+
+  getFilteredBooksFromServer = searchTerm => {
+    return fetch(
+      BASEURL +
+        `?q=""+intitle:${searchTerm}&printType=books&orderBy=newest&maxResults=40&langRestrict=en`
+    )
+      .then(resp => resp.json())
+      .then(
+        this.setState({
+          books: []
+        })
+      )
+      .then(this.addVerifiedBooksToState());
+  };
+
+  resetBooks = () => {
+    this.fetchBooksFromSever()
+      .then(
+        this.setState({
+          books: []
+        })
+      )
+      .then(this.addVerifiedBooksToState());
+  };
+
+  setSortBy = e => {
+    this.setState({ sortBy: e.target.value });
+  };
+
+  getSortedBooks = () => {
+    if (this.state.sortBy === "Alphabetically") {
+      return this.state.books.sort((a, b) =>
+        a.volumeInfo.title.localeCompare(b.volumeInfo.title)
+      );
+    } else if (this.state.sortBy === "Price") {
+      return this.state.books.sort(
+        (a, b) => a.saleInfo.retailPrice.amount - b.saleInfo.retailPrice.amount
+      );
+    } else if (this.state.sortBy === "All") {
+      return this.state.books;
+    }
   };
 
   // setAndFetchUser = currentUser => {
@@ -117,7 +164,14 @@ class App extends Component {
             <Route
               path="/books"
               exact
-              render={() => <Books books={this.state.books} />}
+              render={() => (
+                <Books
+                  books={this.getSortedBooks()}
+                  getFilteredBooksFromServer={this.getFilteredBooksFromServer}
+                  resetBooks={this.resetBooks}
+                  setSortBy={this.setSortBy}
+                />
+              )}
             />
             <Route
               path="/fiction"

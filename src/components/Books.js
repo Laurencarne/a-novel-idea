@@ -2,6 +2,11 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 
 class Books extends Component {
+  state = {
+    searchTerm: "",
+    clicked: false
+  };
+
   renderBook = () => {
     return this.props.books.map(book => (
       <div className="innerCard">
@@ -19,8 +24,47 @@ class Books extends Component {
     ));
   };
 
+  handleChange = event => {
+    this.setState({
+      searchTerm: event.target.value
+    });
+  };
+
+  handleSubmit = event => {
+    event.preventDefault();
+    if (this.state.searchTerm.length > 0) {
+      this.props.getFilteredBooksFromServer(this.state.searchTerm);
+    } else {
+      this.props.resetBooks();
+    }
+    this.setState({
+      searchTerm: ""
+    });
+    event.target.reset();
+  };
+
   render() {
-    return <div className="Card">{this.renderBook()}</div>;
+    return (
+      <>
+        <div className="searching">
+          <form onSubmit={this.handleSubmit} className="searchBar">
+            <input
+              onChange={this.handleChange}
+              type="text"
+              placeholder="Search"
+            />
+            <input className="searchButton" type="submit" />
+          </form>
+          <p>Filter:</p>
+          <select onChange={this.props.setSortBy} className="searchButton">
+            <option value="All">All</option>
+            <option value="Alphabetically">Alphabetically</option>
+            <option value="Price">Price</option>
+          </select>
+        </div>
+        <div className="Card">{this.renderBook()}</div>
+      </>
+    );
   }
 }
 
