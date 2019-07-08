@@ -47,20 +47,25 @@ class Books extends Component {
     return (
       <>
         <div className="searching">
-          <form onSubmit={this.handleSubmit} className="searchBar">
-            <input
-              onChange={this.handleChange}
-              type="text"
-              placeholder="Search"
-            />
-            <input className="searchButton" type="submit" />
-          </form>
-          <p>Filter:</p>
-          <select onChange={this.props.setSortBy} className="searchButton">
-            <option value="All">All</option>
-            <option value="Alphabetically">Alphabetically</option>
-            <option value="Price">Price</option>
-          </select>
+          <span className="searching">
+            <form onSubmit={this.handleSubmit} className="searchBar">
+              <input
+                className="searchBox"
+                onChange={this.handleChange}
+                type="text"
+                placeholder="Search"
+              />
+              <input className="searchButton" type="submit" />
+            </form>
+          </span>
+          <span className="searching">
+            <p className="orangeFont">Sort By:</p>
+            <select onChange={this.props.setSortBy} className="searchButton">
+              <option value="All">All</option>
+              <option value="Alphabetically">Alphabetically</option>
+              <option value="Price">Price</option>
+            </select>
+          </span>
         </div>
         <div className="Card">{this.renderBook()}</div>
       </>

@@ -2,36 +2,49 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 
 class Cart extends Component {
-  state = {
-    clicked: false
-  };
-
   renderBooks = () => {
-    return this.props.cart.map(book => (
+    return this.props.cartBooks.map(cartBook => (
       <div className="innerCard">
-        <Link style={{ textDecoration: "none" }} to={`/books/${book.id}`}>
-          <img className="book-img" src={book.image} alt={book.title} />
-          <h3 className="bookTitleLink"> {book.title} </h3>
-          <h5 className="bookAuthorLink"> {book.author} </h5>
-          <p className="bookPriceLink"> £{book.price} </p>
+        <Link
+          style={{ textDecoration: "none" }}
+          to={`/books/${cartBook.book.google_id}`}
+        >
+          <img
+            className="book-img"
+            src={cartBook.book.image}
+            alt={cartBook.book.title}
+          />
+          <h3 className="bookTitleLink"> {cartBook.book.title} </h3>
+          <h5 className="bookAuthorLink"> {cartBook.book.author} </h5>
+          <p className="bookPriceLink"> £{cartBook.book.price} </p>
         </Link>
-        <button onClick={() => this.handleClick(book.id)}>Remove</button>
+        <button onClick={() => this.handleClick(cartBook.id)}>Remove</button>
       </div>
     ));
   };
 
-  handleClick = book => {
-    this.setState({
-      clicked: !this.state.clicked
-    });
-    console.log(book);
+  handleClick = cartBookId => {
+    this.deleteCartBookFromServer(cartBookId);
   };
+
+  deleteCartBookFromServer = cartBookId => {
+    return fetch(`http://localhost:3000/cart_books/${cartBookId}`, {
+      method: "DELETE"
+    })
+      .then(respo => respo.json())
+      .then(this.props.updateCart);
+  };
+
+  prices = () => this.props.cartBooks.map(cartBook => cartBook.book.price);
+
+  total = () => this.prices().reduce((a, b) => a + b, 0);
 
   render() {
     return (
       <>
-        <h1>{this.props.user.first_name}'s Cart</h1>
+        <h1>{this.props.user.first_name}'s Basket</h1>
         <div className="Card">{this.renderBooks()}</div>
+        <h3>Basket Total £{this.total()}</h3>
       </>
     );
   }

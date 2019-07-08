@@ -3,21 +3,36 @@ import { Link } from "react-router-dom";
 
 class Wishlists extends Component {
   renderBooks = () => {
-    return this.props.wishlist.map(book => (
+    return this.props.wishlist.map(wishBook => (
       <div className="innerCard">
-        <Link style={{ textDecoration: "none" }} to={`/books/${book.id}`}>
-          <img className="book-img" src={book.image} alt={book.title} />
-          <h3 className="bookTitleLink"> {book.title} </h3>
-          <h5 className="bookAuthorLink"> {book.author} </h5>
-          <p className="bookPriceLink"> £{book.price} </p>
+        <Link
+          style={{ textDecoration: "none" }}
+          to={`/books/${wishBook.book.google_id}`}
+        >
+          <img
+            className="book-img"
+            src={wishBook.book.image}
+            alt={wishBook.book.title}
+          />
+          <h3 className="bookTitleLink"> {wishBook.book.title} </h3>
+          <h5 className="bookAuthorLink"> {wishBook.book.author} </h5>
+          <p className="bookPriceLink"> £{wishBook.book.price} </p>
         </Link>
-        <button onClick={() => this.handleClick(book.id)}>Remove</button>
+        <button onClick={() => this.handleClick(wishBook.id)}>Remove</button>
       </div>
     ));
   };
 
-  handleClick = book => {
-    console.log(book);
+  handleClick = id => {
+    this.deleteWishBookFromServer(id);
+  };
+
+  deleteWishBookFromServer = id => {
+    return fetch(`http://localhost:3000/wish_books/${id}`, {
+      method: "DELETE"
+    })
+      .then(respo => respo.json())
+      .then(this.props.updateWishlist);
   };
 
   render() {

@@ -23,7 +23,7 @@ class App extends Component {
       currentUser: {},
       currentUsersOrders: [],
       currentUsersWishlist: [],
-      currentUsersCart: [],
+      currentUsersCartBooks: [],
       sortBy: "All"
     };
   }
@@ -31,9 +31,6 @@ class App extends Component {
   componentDidMount() {
     this.fetchBooksFromSever().then(this.addVerifiedBooksToState());
     this.fetchUsersFromServer().then(this.addUserToState());
-    // if (localStorage.getItem("User")) {
-    //   this.setAndFetchUser(JSON.parse(localStorage.getItem("User")));
-    // }
   }
 
   fetchUsersFromServer = () =>
@@ -43,8 +40,8 @@ class App extends Component {
     this.setState({
       currentUser: data,
       currentUsersOrders: data.orders,
-      currentUsersWishlist: data.wishlist.books,
-      currentUsersCart: data.cart.books
+      currentUsersWishlist: data.wishlist.wish_books,
+      currentUsersCartBooks: data.cart.cart_books
     });
 
   fetchBooksFromSever = () => {
@@ -117,25 +114,14 @@ class App extends Component {
     }
   };
 
-  // setAndFetchUser = currentUser => {
-  //   this.setState({
-  //     userId: currentUser
-  //   });
-  //   fetch(`http://localhost:3000/users/${currentUser}`).then(resp =>
-  //     resp.json().then(data =>
-  //       this.setState({
-  //         currentUser: data
-  //       })
-  //     )
-  //   );
-  // };
+  updateStateInformation = cart => {
+    this.fetchUsersFromServer().then(this.addUserToState());
+  };
 
-  // setUser = currentUser => {
-  //   localStorage.setItem("User", JSON.stringify(currentUser));
+  // updateWishlist = wishlist => {
   //   this.setState({
-  //     userId: currentUser
+  //     currentUsersWishlist: wishlist
   //   });
-  //   this.setAndFetchUser(currentUser);
   // };
 
   // fetchFilteredBooksFromServer = genre => {
@@ -164,8 +150,9 @@ class App extends Component {
             <Route
               path="/books"
               exact
-              render={() => (
+              render={props => (
                 <Books
+                  {...props}
                   books={this.getSortedBooks()}
                   getFilteredBooksFromServer={this.getFilteredBooksFromServer}
                   resetBooks={this.resetBooks}
@@ -178,7 +165,19 @@ class App extends Component {
               exact
               render={() => <Fiction books={this.state.fiction} />}
             />
-            <Route path="/books/:id" exact component={BookInformation} />
+            <Route
+              path="/books/:id"
+              exact
+              render={props => (
+                <BookInformation
+                  {...props}
+                  usersCart={this.state.currentUsersCartBooks}
+                  updateInformation={this.updateStateInformation}
+                  usersWishlist={this.state.currentUsersWishlist}
+                  currentUser={this.state.currentUser}
+                />
+              )}
+            />
             <Route
               path="/orders"
               exact
@@ -195,8 +194,9 @@ class App extends Component {
               exact
               render={() => (
                 <Cart
+                  updateCart={this.updateStateInformation}
                   user={this.state.currentUser}
-                  cart={this.state.currentUsersCart}
+                  cartBooks={this.state.currentUsersCartBooks}
                 />
               )}
             />
@@ -205,6 +205,7 @@ class App extends Component {
               exact
               render={() => (
                 <Wishlists
+                  updateWishlist={this.updateStateInformation}
                   user={this.state.currentUser}
                   wishlist={this.state.currentUsersWishlist}
                 />

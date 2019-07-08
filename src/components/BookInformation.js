@@ -5,139 +5,153 @@ const BASEURL = "https://www.googleapis.com/books/v1/volumes";
 
 class BookInformation extends Component {
   state = {
-    clicked: false,
     book: [],
     image: {},
     genre: [],
-    price: {},
-    id: ""
+    price: {}
   };
 
   componentDidMount() {
-    fetch(BASEURL + `/${this.props.match.params.id}`)
+    return fetch(BASEURL + `/${this.props.match.params.id}`)
       .then(resp => resp.json())
-      .then(data =>
-        this.setState({
-          book: data.volumeInfo,
-          image: data.volumeInfo.imageLinks,
-          genre: data.volumeInfo.categories[0],
-          price: data.saleInfo.listPrice,
-          id: data.id
-        })
-      );
+      .then(data => {
+        if (
+          data.volumeInfo &&
+          data.volumeInfo.imageLinks.thumbnail &&
+          data.volumeInfo.categories &&
+          data.saleInfo.listPrice
+        ) {
+          this.setState({
+            book: data.volumeInfo,
+            image: data.volumeInfo.imageLinks.thumbnail,
+            genre: data.volumeInfo.categories[0],
+            price: data.saleInfo.listPrice
+          });
+        }
+      });
   }
 
-  // renderCartButton = () => {
-  //   if (!localStorage.getItem("basket").includes(this.state.id)) {
-  //     return (
-  //       <>
-  //         <button onClick={this.handleCartClick}> Add to Cart </button>
-  //       </>
-  //     );
-  //   } else {
-  //     return (
-  //       <>
-  //         <Link to="/cart" style={{ textDecoration: "none" }}>
-  //           <button> View Cart </button>
-  //         </Link>
-  //       </>
-  //     );
-  //   }
-  // };
-
-  // renderWishButton = () => {
-  //   if (!localStorage.getItem("basket").includes(this.state.id)) {
-  //     return (
-  //       <>
-  //         <button onClick={this.handleWishClick}> Add to WishList </button>
-  //       </>
-  //     );
-  //   } else {
-  //     return (
-  //       <>
-  //         <Link to="/wishlists" style={{ textDecoration: "none" }}>
-  //           <button> View WishList </button>{" "}
-  //         </Link>
-  //       </>
-  //     );
-  //   }
-  // };
-
-  handleCartClick = e => {
-    this.setState({
-      clicked: true
-    });
-    console.log("Clicked");
-
-    const cart_book = {
-      cart_id: 1,
-      book_id: 5
-    };
-
-    e.preventDefault();
-
-    this.addBookToServer(this.setBookDetails());
-    this.addBookToCartOnServer(cart_book);
+  renderCartButton = () => {
+    if (
+      !this.props.usersCart
+        .map(book => book.book.google_id)
+        .includes(this.props.match.params.id)
+    ) {
+      return (
+        <>
+          <button onClick={this.handleCartClick}> Add to Cart </button>
+        </>
+      );
+    } else {
+      return (
+        <>
+          <Link to="/cart" style={{ textDecoration: "none" }}>
+            <button className="selected"> View Cart </button>
+          </Link>
+        </>
+      );
+    }
   };
 
-  addBookToServer = book => {
+  renderWishButton = () => {
+    if (
+      !this.props.usersWishlist
+        .map(book => book.book.google_id)
+        .includes(this.props.match.params.id)
+    ) {
+      return (
+        <>
+          <button onClick={this.handleWishClick}> Add to WishList </button>
+        </>
+      );
+    } else {
+      return (
+        <>
+          <Link to="/wishlists" style={{ textDecoration: "none" }}>
+            <button className="selected"> View WishList </button>
+          </Link>
+        </>
+      );
+    }
+  };
+
+  handleCartClick = e => {
+    e.preventDefault();
+    this.addBookToServerCart(this.setCartBookDetails());
+  };
+
+  addBookToServerCart = book => {
     return fetch(`http://localhost:3000/books`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
       body: JSON.stringify(book)
-    });
+    }).then(data => this.props.updateInformation());
   };
 
-  addBookToCartOnServer = cart_book => {
-    return fetch(`http://localhost:3000/cart_books`, {
+  setCartBookDetails = () => {
+    const book = {
+      book: {
+        cart_id: this.props.currentUser.cart.id,
+        google_id: this.props.match.params.id,
+        title: this.state.book.title,
+        author: this.state.book.authors.join(),
+        price: this.state.price.amount,
+        image: this.state.image,
+        publisher: this.state.book.publisher,
+        description: this.state.book.description,
+        genre: this.state.genre,
+        publishedDate: this.state.book.publishedDate,
+        pageCount: this.state.book.pageCount
+      }
+    };
+    return book;
+  };
+
+  handleWishClick = e => {
+    e.preventDefault();
+    this.addBookToServerWishlist(this.setWishlistBookDetails());
+  };
+
+  addBookToServerWishlist = book => {
+    return fetch(`http://localhost:3000/books`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify(cart_book)
-    });
+      body: JSON.stringify(book)
+    })
+      .then(resp => resp.json())
+      .then(data => this.props.updateInformation());
   };
 
-  // handleWishClick = e => {
-  //   console.log("Clicked");
-  //   e.preventDefault();
-  //   this.addBookToServerWishlist(this.setBookDetails());
-  // };
-  //
-  // addBookToServerWishlist = book => {
-  //   return fetch(`http://localhost:3000/wishlists`, {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json"
-  //     },
-  //     body: JSON.stringify(book)
-  //   }).then(resp => resp.json());
-  // };
-
-  setBookDetails = () => {
+  setWishlistBookDetails = () => {
     const book = {
-      title: this.state.book.title,
-      author: this.state.book.authors.join(),
-      price: this.state.price.amount,
-      image: this.state.image.thumbnail,
-      publisher: this.state.book.publisher,
-      description: this.state.book.description,
-      genre: this.state.genre,
-      publishedDate: this.state.book.publishedDate,
-      pageCount: this.state.book.pageCount
+      book: {
+        wishlist_id: this.props.currentUser.wishlist.id,
+        google_id: this.props.match.params.id,
+        title: this.state.book.title,
+        author: this.state.book.authors.join(),
+        price: this.state.price.amount,
+        image: this.state.image,
+        publisher: this.state.book.publisher,
+        description: this.state.book.description,
+        genre: this.state.genre,
+        publishedDate: this.state.book.publishedDate,
+        pageCount: this.state.book.pageCount
+      }
     };
     return book;
   };
 
   render() {
     return (
-      <div>
+      <div className="container">
         <h1 className="bookTitle">{this.state.book.title}</h1>
         <img
           className="bookImage"
-          src={this.state.image.thumbnail}
+          src={this.state.image}
           alt={this.state.book.title}
         />
         <h2 className="bookAuthor">{this.state.book.authors}</h2>
@@ -156,7 +170,10 @@ class BookInformation extends Component {
           className="bookDescription"
           dangerouslySetInnerHTML={{ __html: this.state.book.description }}
         />
-        <button onClick={this.handleCartClick}> Add to Cart </button>
+        <div>
+          {this.renderWishButton()}
+          {this.renderCartButton()}
+        </div>
       </div>
     );
   }

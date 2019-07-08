@@ -23,7 +23,7 @@ class Footer extends Component {
             Miao Shan
           </a>
         </h4>
-        <h5 className="copyright"> &copy; Copyright 2019 Flatiron School </h5>
+        <h5 className="copyright"> &copy; Copyright 2019 </h5>
       </footer>
     );
   }

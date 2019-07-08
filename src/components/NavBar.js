@@ -9,24 +9,42 @@ function NavBar() {
   return (
     <nav className="NavBar">
       <Link style={navStyle} to="/">
-        <h3>Home</h3>
+        <h3>
+          <img
+            className="homeImage"
+            src="https://i.imgur.com/TPH7boK.png"
+            alt="Home Image"
+          />
+        </h3>
       </Link>
 
       <ul className="nav-links">
         <Link style={navStyle} to="/books">
-          <li>Books</li>
+          <li className="navButtons">Books</li>
         </Link>
         <Link style={navStyle} to="/orders">
-          <li>Orders</li>
+          <li className="navButtons">Orders</li>
         </Link>
         <Link style={navStyle} to="/wishlists">
-          <li>Wish List</li>
+          <li className="navButtons">Wish List</li>
         </Link>
         <Link style={navStyle} to="/cart">
-          <li>Cart</li>
+          <li>
+            <img
+              className="navImage"
+              src="https://i.imgur.com/gphuW4V.png"
+              alt="Shopping Cart"
+            />
+          </li>
         </Link>
         <Link style={navStyle} to="/login">
-          <li>Login</li>
+          <li>
+            <img
+              className="navImage"
+              src="https://i.imgur.com/gkemPmm.png"
+              alt="Login Key"
+            />
+          </li>
         </Link>
       </ul>
     </nav>
