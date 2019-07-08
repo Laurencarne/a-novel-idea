@@ -69,9 +69,15 @@ class BookInformation extends Component {
     });
     console.log("Clicked");
 
+    const cart_book = {
+      cart_id: 1,
+      book_id: 5
+    };
+
     e.preventDefault();
 
     this.addBookToServer(this.setBookDetails());
+    this.addBookToCartOnServer(cart_book);
   };
 
   addBookToServer = book => {
@@ -84,15 +90,15 @@ class BookInformation extends Component {
     });
   };
 
-  // addBookToCartOnServer = book => {
-  //   return fetch(`http://localhost:3000/books`, {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json"
-  //     },
-  //     body: JSON.stringify(book)
-  //   });
-  // };
+  addBookToCartOnServer = cart_book => {
+    return fetch(`http://localhost:3000/cart_books`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(cart_book)
+    });
+  };
 
   // handleWishClick = e => {
   //   console.log("Clicked");
@@ -112,7 +118,6 @@ class BookInformation extends Component {
 
   setBookDetails = () => {
     const book = {
-      id: this.state.id,
       title: this.state.book.title,
       author: this.state.book.authors.join(),
       price: this.state.price.amount,
