@@ -47,7 +47,7 @@ class App extends Component {
   fetchBooksFromSever = () => {
     return fetch(
       BASEURL +
-        '?q=""&printType=books&orderBy=newest&maxResults=40&langRestrict=en'
+        '?q=""&printType=books&orderBy=newest&startIndex=1&maxResults=40&langRestrict=en'
     ).then(resp => resp.json());
   };
 
@@ -75,7 +75,7 @@ class App extends Component {
   getFilteredBooksFromServer = searchTerm => {
     return fetch(
       BASEURL +
-        `?q=""+intitle:${searchTerm}&printType=books&orderBy=newest&maxResults=40&langRestrict=en`
+        `?q=""+intitle:"${searchTerm}"&printType=books&orderBy=newest&startIndex=1&maxResults=40&langRestrict=en`
     )
       .then(resp => resp.json())
       .then(
@@ -117,12 +117,6 @@ class App extends Component {
   updateStateInformation = cart => {
     this.fetchUsersFromServer().then(this.addUserToState());
   };
-
-  // updateWishlist = wishlist => {
-  //   this.setState({
-  //     currentUsersWishlist: wishlist
-  //   });
-  // };
 
   // fetchFilteredBooksFromServer = genre => {
   //   return fetch(
